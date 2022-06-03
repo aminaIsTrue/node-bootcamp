@@ -13,6 +13,10 @@ const { Http2ServerRequest } = require("http2");
 // fs.writeFileSync("./txt/output.txt", Output);
 
 //2- read & write files async mode (do it later)
+
+// here write code that will be executed one time
+const dataJason = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+
 // //////Server
 // 3- create a web server
 // 4- implementing simple routing
@@ -22,6 +26,10 @@ const server = http.createServer((req, res) => {
     res.end("This is the OVERVIEW page!");
   } else if (pathName === "/products") {
     res.end("This is the PRODUCTS page!");
+  } else if (pathName === "/api") {
+    res.writeHead(200, { "content-type": "application/json" });
+    // we read the file in the begining to not to execute the readfile whenever we request the api url
+    res.end(dataJason);
   } else {
     res.writeHead(404, { "content-type": "text/html" });
     res.end("<h1>PAGE NOT FOUND!</h1>");
