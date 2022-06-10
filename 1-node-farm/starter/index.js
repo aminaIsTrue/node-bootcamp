@@ -1,9 +1,14 @@
+// 1- Always start by requiring node core modules
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
 const { Http2ServerRequest } = require("http2");
 const { parse } = require("path");
 
+// 2- then requiring third party modules
+
+const slugify = require("slugify");
+// 3-then our own modules
 const ReplaceTemplate = require("./modules/replaceTemplate");
 
 // ////Files
@@ -35,7 +40,10 @@ const OverviewProduct = fs.readFileSync(
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 // Parsing gives each peace of data each type
 const dataJason = JSON.parse(data);
-
+const sluggedProductsName = dataJason.map((el) =>
+  slugify(el.productName, { lower: true })
+);
+console.log(sluggedProductsName);
 // function that put each object from the Json array in its placeholder
 
 // //////Server
