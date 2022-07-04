@@ -19,12 +19,6 @@ app.use((req, res, next) => {
 });
 const port = 3000;
 
-app.listen(port, () => console.log(`Server running on port ${port}...`));
-// app.get('/', (req, res) =>
-//   res.status(200).json({ message: 'Hello from the server', app: 'Natours' })
-// );
-
-// app.post('/', (req, res) => res.send('you can Post to this endpoint'));
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
@@ -113,6 +107,37 @@ const deleteTour = (req, res) => {
   });
 };
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented',
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented',
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet implemented',
+  });
+};
+
 // ///////////////////////////////////////
 // 1- way for calling routes
 // app.get('/api/v1/tours', getAllTours);
@@ -123,11 +148,21 @@ const deleteTour = (req, res) => {
 
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
+
 // 2- way for calling routes
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+// # Tours routes
+// creating and mounting multiple routes
+
+const tourRouter = express.Router(); // this is a middleware
+const userRouter = express.Router();
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+
+// # Users routes
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+// start server
+app.listen(port, () => console.log(`Server running on port ${port}...`));
