@@ -1,7 +1,8 @@
-const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const { json } = require('express');
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
 const app = express();
 app.use(express.json());
 // use a third party middleware
@@ -17,152 +18,9 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-const port = 3000;
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-// functions: routes handlers////////////
-const getAllTours = (req, res) => {
-  // console.log(req);
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-};
-
-const getTour = (req, res) => {
-  // console.log(req.params);
-  console.log(req.requestTime);
-  const id = req.params.id * 1;
-  if (id >= tours.length || id < 0) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'ID is not valid!',
-    });
-  }
-  const tour = tours.find((tour) => tour.id === id);
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    requestedAt: req.requestTime,
-    data: {
-      tours: tour,
-    },
-  });
-};
-const createTour = (req, res) => {
-  // console.log(req.body);
-
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-};
-const updateTour = (req, res) => {
-  const id = req.params.id * 1;
-  if (id >= tours.length || id < 0) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'ID is not valid!',
-    });
-  }
-  const tour = tours.find((tour) => tour.id === id);
-  tour.name = 'Amina';
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    data: {
-      tours: tour,
-    },
-  });
-};
-const deleteTour = (req, res) => {
-  const id = req.params.id * 1;
-  if (id >= tours.length || id < 0) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'ID is not valid!',
-    });
-  }
-  const tour = tours.find((tour) => tour.id === id);
-  res.status(204).json({
-    status: 'success',
-    // results: tours.length,
-    data: null,
-  });
-};
-
-const getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet implemented',
-  });
-};
-const createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet implemented',
-  });
-};
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet implemented',
-  });
-};
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet implemented',
-  });
-};
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet implemented',
-  });
-};
-
-// ///////////////////////////////////////
-// 1- way for calling routes
-// app.get('/api/v1/tours', getAllTours);
-
-// app.get('/api/v1/tours/:id', getTour);
-
-// app.post('/api/v1/tours', createTour);
-
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
-
-// 2- way for calling routes
-
-// # Tours routes
-// creating and mounting multiple routes
-
-const tourRouter = express.Router(); // this is a middleware
-const userRouter = express.Router();
+// this is a middleware
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-tourRouter.route('/').get(getAllTours).post(createTour);
-tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
-// # Users routes
-userRouter.route('/').get(getAllUsers).post(createUser);
-userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
-// start server
-app.listen(port, () => console.log(`Server running on port ${port}...`));
+module.exports = app;
